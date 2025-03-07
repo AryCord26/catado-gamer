@@ -1,0 +1,125 @@
+package com.catadogamer;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.persistence.*;
+import java.util.List;
+
+@SpringBootApplication
+public class CatadoGamerApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(CatadoGamerApplication.class, args);
+    }
+}
+
+@Entity
+@Table(name = "usuarios")
+public class Usuario {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nome;
+    private String email;
+    private String senha;
+    private String nickname;
+
+    // Getters e Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getSenha() { return senha; }
+    public void setSenha(String senha) { this.senha = senha; }
+    public String getNickname() { return nickname; }
+    public void setNickname(String nickname) { this.nickname = nickname; }
+}
+
+@Entity
+@Table(name = "jogos")
+public class Jogo {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nome;
+    private String categoria;
+    private String descricao;
+    private double avaliacao;
+
+    // Getters e Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+    public String getCategoria() { return categoria; }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
+    public String getDescricao() { return descricao; }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
+    public double getAvaliacao() { return avaliacao; }
+    public void setAvaliacao(double avaliacao) { this.avaliacao = avaliacao; }
+}
+
+interface UsuarioRepository extends JpaRepository<Usuario, Long> {}
+
+interface JogoRepository extends JpaRepository<Jogo, Long> {}
+
+@RestController
+@RequestMapping("/usuarios")
+class UsuarioController {
+    @Autowired
+    private UsuarioRepository repository;
+
+    @GetMapping
+    public List<Usuario> listarUsuarios() {
+        return repository.findAll();
+    }
+
+    @PostMapping
+    public Usuario criarUsuario(@RequestBody Usuario usuario) {
+        return repository.save(usuario);
+    }
+
+    @PutMapping("/{id}")
+    public Usuario atualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+        usuario.setId(id);
+        return repository.save(usuario);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletarUsuario(@PathVariable Long id) {
+        repository.deleteById(id);
+    }
+}
+
+@RestController
+@RequestMapping("/jogos")
+class JogoController {
+    @Autowired
+    private JogoRepository repository;
+
+    @GetMapping
+    public List<Jogo> listarJogos() {
+        return repository.findAll();
+    }
+
+    @PostMapping
+    public Jogo criarJogo(@RequestBody Jogo jogo) {
+        return repository.save(jogo);
+    }
+
+    @PutMapping("/{id}")
+    public Jogo atualizarJogo(@PathVariable Long id, @RequestBody Jogo jogo) {
+        jogo.setId(id);
+        return repository.save(jogo);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletarJogo(@PathVariable Long id) {
+        repository.deleteById(id);
+    }
+}
